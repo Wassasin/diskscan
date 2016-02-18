@@ -88,6 +88,7 @@ public:
 		if(result != EXIT_SUCCESS)
 			return result;
 
+		filescan fs(opt.sector_size);
 		boost::filesystem::recursive_directory_iterator di(opt.path), di_end;
 		for(; di != di_end; ++di)
 		{
@@ -95,7 +96,7 @@ public:
 			if(boost::filesystem::is_regular_file(p))
 			{
 				std::string p_str = p.string();
-				filescan::result_t r = filescan::exec(p_str, opt.sector_size);
+				filescan::result_t r = fs.exec(p_str);
 
 				if(r.empty_sectors > 0)
 					std::cout << p_str << std::endl;
