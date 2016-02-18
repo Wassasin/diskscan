@@ -18,6 +18,7 @@ private:
 	{
 		std::string path;
 		size_t sector_size;
+		float minimal;
 		bool silent = false;
 	};
 
@@ -28,7 +29,8 @@ private:
 				("help,h", "display this message")
 				("silent,s", "do not print progress")
 				("sectorsize,S", boost::program_options::value(&opt.sector_size), "size of sectors to scan for (default: 4096)")
-				("path,p", boost::program_options::value(&opt.path), "path which to process (default: .)");
+				("path,p", boost::program_options::value(&opt.path), "path which to process (default: .)")
+				("minimal,m", boost::program_options::value(&opt.minimal), "minimal ratio of empty sectors (default: 0)");
 
 		boost::program_options::variables_map vm;
 		boost::program_options::positional_options_description pos;
@@ -98,15 +100,18 @@ public:
 				std::string p_str = p.string();
 				filescan::result_t r = fs.exec(p_str);
 
-				if(r.empty_sectors > 0)
-					std::cout << p_str << std::endl;
+				float ratio = (float)r.empty_sectors / (float)r.sectors;
+				float ratio_rounded = std::round(ratio * 10000.0f) / 10000.0f;
+
+				if(r.size > 0 && ratio > opt.minimal)
+				{
+					std::cout << r.empty_sectors << '\t' << r.sectors << '\t' << ratio_rounded << '\t' << p_str << std::endl;
+				}
 
 				if(!opt.silent)
 				{
-					float ratio = std::round(((float)r.empty_sectors / (float)r.sectors) * 1000.0f) / 1000.0f;
-
 					if(r.size > 0)
-						std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << ratio << '\t' << p_str << std::endl;
+						std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << ratio_rounded << '\t' << p_str << std::endl;
 					else
 						std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << 0 << '\t' << p_str << std::endl;
 				}
