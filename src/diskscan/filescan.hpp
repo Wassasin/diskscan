@@ -40,6 +40,10 @@ private:
 
 		std::ifstream is(path, std::ifstream::binary | std::ifstream::ate);
 		result.size = is.tellg();
+
+		if(result.size == 0)
+			return result;
+
 		result.sectors = (result.size - 1) / sector_size + 1;
 		is.seekg(0);
 

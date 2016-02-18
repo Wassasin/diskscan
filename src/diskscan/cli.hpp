@@ -104,7 +104,11 @@ public:
 				if(!opt.silent)
 				{
 					float ratio = std::round(((float)r.empty_sectors / (float)r.sectors) * 1000.0f) / 1000.0f;
-					std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << ratio << '\t' << p_str << std::endl;
+
+					if(r.size > 0)
+						std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << ratio << '\t' << p_str << std::endl;
+					else
+						std::cerr << r.empty_sectors << '\t' << r.sectors << '\t' << 0 << '\t' << p_str << std::endl;
 				}
 			}
 		}
